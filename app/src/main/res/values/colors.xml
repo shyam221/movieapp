@@ -7,4 +7,9 @@
     // TODO: 22/02/18
     <color name="colorNavigationIcon">#dae9f6</color>
     <color name="colorNavigationText">#ffffff</color>
+    <color name="green">#00FF00</color>
+    <color name="blue">#0000FF</color>
+    <color name="red">#FF0000</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="purple">#FF00FF</color>
 </resources>
