@@ -2,6 +2,7 @@ package com.example.movieapp.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -28,6 +29,11 @@ class FavoriteActivity : AppCompatActivity() {
 
         favoriteViewModel = ViewModelProviders.of(this).get(FavoriteViewModel::class.java)
         favoriteViewModel?.getFavorite()?.observe(this, Observer<List<Favorite>> { this.renderFavorite(it) })
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     private fun renderFavorite(favorites: List<Favorite>?) {

@@ -13,4 +13,5 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
     fun setFavorite(favorite: Favorite) {
         repository.setFavorite(favorite)
     }
+
 }

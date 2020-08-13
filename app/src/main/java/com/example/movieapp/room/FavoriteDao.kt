@@ -17,4 +17,7 @@ interface FavoriteDao {
 
     @Query("DELETE FROM favorite_table")
     fun deleteAll()
+
+    @Query("DELETE FROM favorite_table WHERE title = :title")
+    fun deleteByTitle(title: String)
 }

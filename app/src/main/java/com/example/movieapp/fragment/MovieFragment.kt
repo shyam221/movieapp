@@ -27,12 +27,12 @@ import com.example.movieapp.viewmodel.MovieViewModel
 class MovieFragment : Fragment(), MovieClickListener {
 
     private lateinit var viewModel: MovieViewModel
-
+    private lateinit var binding: FragmentMovieBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding = DataBindingUtil.inflate<FragmentMovieBinding>(inflater,R.layout.fragment_movie, container, false)
+        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_movie, container, false)
         viewModel = ViewModelProviders.of(activity!!).get(MovieViewModel::class.java)
 
         viewModel.data.observe({ lifecycle }, {

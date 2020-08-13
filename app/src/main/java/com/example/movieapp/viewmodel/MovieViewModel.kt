@@ -41,6 +41,10 @@ class MovieViewModel(application: Application) : AndroidViewModel(application) {
         repository.setFavorite(favorite)
     }
 
+    fun getFavorite() = repository.getFavorite()
+
+    fun deleteFavorite(title: String) = repository.deleteFavorite(title)
+
     fun initData() {
         uiScope.launch {
             try {

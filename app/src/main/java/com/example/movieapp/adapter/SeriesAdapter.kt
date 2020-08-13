@@ -2,6 +2,7 @@ package com.example.movieapp.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,8 @@ import kotlinx.android.synthetic.main.movie_item.view.*
 
 class SeriesAdapter (private val series: List<Series>)
     : RecyclerView.Adapter<SeriesAdapter.SeriesViewHolder>(){
+
+    var listener: SeriesClickListener? = null
 
     class SeriesViewHolder(val itemBinding: MovieItemBinding)
         : RecyclerView.ViewHolder(itemBinding.root)
@@ -47,18 +50,27 @@ class SeriesAdapter (private val series: List<Series>)
                 holder.itemBinding.border.setBackgroundColor(Color.parseColor("#0000FF"))
             }
             2 -> {
-                holder.itemBinding.genre.text = "Lainnya"
-                holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FF00FF"))
+                holder.itemBinding.genre.text = "Action"
+//                holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FF00FF"))
+                holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FF0000"))
             }
             3 -> {
-                holder.itemBinding.genre.text = "Comedy"
-                holder.itemBinding.border.setBackgroundColor(Color.parseColor("#00FF00"))
+                holder.itemBinding.genre.text = "Drama"
+                holder.itemBinding.border.setBackgroundColor(Color.parseColor("#0000FF"))
+//                holder.itemBinding.border.setBackgroundColor(Color.parseColor("#00FF00"))
             }
             4 -> {
                 holder.itemBinding.genre.text = "Action"
                 holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FF0000"))
             }
         }
+        holder.itemBinding.content.setOnClickListener {
+            listener?.onSeriesClick(it, serie)
+        }
     }
 
+}
+
+interface SeriesClickListener{
+    fun onSeriesClick(view: View, series: Series)
 }
