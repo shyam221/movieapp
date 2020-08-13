@@ -25,7 +25,7 @@ interface ApiService {
     suspend fun showMovies() : ResponseMovie
 
     @GET("tvs")
-    fun showTvSeries() : ResponseSeries
+    suspend fun showTvSeries() : ResponseSeries
 }
 
 object ApiMovie {
