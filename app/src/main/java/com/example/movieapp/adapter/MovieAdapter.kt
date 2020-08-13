@@ -2,6 +2,7 @@ package com.example.movieapp.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -14,6 +15,7 @@ import com.example.movieapp.model.ResponseMovie
 
 class MovieAdapter(private val movie: List<Movie>)
     : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
+    var listener: MovieClickListener? = null
 
     inner class MovieViewHolder (val itemMovieBinding: MovieItemBinding)
         : RecyclerView.ViewHolder(itemMovieBinding.root)
@@ -62,8 +64,13 @@ class MovieAdapter(private val movie: List<Movie>)
                 holder.itemMovieBinding.border.setBackgroundColor(Color.parseColor("#FF0000"))
             }
         }
-
+        holder.itemMovieBinding.content.setOnClickListener {
+            listener?.onItemClicked(it, movies)
+        }
 
     }
 
+}
+interface MovieClickListener {
+    fun onItemClicked(view: View, movie: Movie)
 }

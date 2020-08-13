@@ -1,24 +1,30 @@
 package com.example.movieapp.fragment
 
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.movieapp.R
 import com.example.movieapp.adapter.MovieAdapter
+import com.example.movieapp.adapter.MovieClickListener
 import com.example.movieapp.databinding.FragmentMovieBinding
+import com.example.movieapp.model.Movie
+import com.example.movieapp.room.Favorite
 import com.example.movieapp.viewmodel.MovieViewModel
 
 /**
  * A simple [Fragment] subclass.
  */
-class MovieFragment : Fragment() {
+class MovieFragment : Fragment(), MovieClickListener {
 
     private lateinit var viewModel: MovieViewModel
 
@@ -31,6 +37,7 @@ class MovieFragment : Fragment() {
 
         viewModel.data.observe({ lifecycle }, {
             val movieAdapter = MovieAdapter(it.results)
+            movieAdapter.listener = this
             val recyclerView = binding.listMovie
 
             recyclerView.apply {
@@ -48,5 +55,29 @@ class MovieFragment : Fragment() {
             fragment.arguments = args
             return fragment
         }
+    }
+
+    override fun onItemClicked(view: View, movie: Movie) {
+        val alertDialog: AlertDialog? = activity?.let {
+            val builder = AlertDialog.Builder(it)
+            builder.apply {
+                setPositiveButton("Iya"
+                ) { _, _ ->
+                    viewModel.setFavorite(
+                        Favorite(0, true, movie.poster_path,
+                            movie.title, movie.genre_ids[0], movie.release_date,
+                            movie.vote_average, movie.overview, "Movie"))
+                }
+                setNegativeButton("Tidak",
+                    DialogInterface.OnClickListener{ _, _ ->
+
+                    })
+            }
+            builder.setMessage("Apakah Anda ingin memfavorite/unfavorite item ini?")
+            builder.create()
+        }
+
+        alertDialog!!.show()
+
     }
 }

@@ -1,19 +1,25 @@
 package com.example.movieapp.viewmodel
 
+import android.app.Application
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.movieapp.model.Movie
 import com.example.movieapp.model.ResponseMovie
 import com.example.movieapp.network.ApiMovie
+import com.example.movieapp.repository.FavoriteRepository
+import com.example.movieapp.room.Favorite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class MovieViewModel : ViewModel() {
+class MovieViewModel(application: Application) : AndroidViewModel(application) {
+
+    private var repository: FavoriteRepository = FavoriteRepository(application)
 
     private val _data = MutableLiveData<ResponseMovie>()
     val data : LiveData<ResponseMovie>
@@ -31,12 +37,16 @@ class MovieViewModel : ViewModel() {
         initData()
     }
 
+    fun setFavorite(favorite: Favorite) {
+        repository.setFavorite(favorite)
+    }
+
     fun initData() {
         uiScope.launch {
             try {
                 val result = ApiMovie.retrofitService.showMovies()
 
-                if (result.page != null) {
+                if (result.results.isNotEmpty()) {
                     _data.value = result
                     _response.value = "Fetch data berhasil!"
                     Log.d("Page", result.page.toString())

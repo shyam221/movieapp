@@ -1,17 +1,22 @@
 package com.example.movieapp.viewmodel
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.movieapp.model.ResponseSeries
 import com.example.movieapp.network.ApiMovie
+import com.example.movieapp.repository.FavoriteRepository
+import com.example.movieapp.room.Favorite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class SeriesViewModel : ViewModel() {
+class SeriesViewModel(application: Application) : AndroidViewModel(application) {
+    private var repository: FavoriteRepository = FavoriteRepository(application)
     private val _data = MutableLiveData<ResponseSeries>()
     val data : LiveData<ResponseSeries>
             get() = _data
@@ -26,6 +31,10 @@ class SeriesViewModel : ViewModel() {
     init {
         _response.value = ""
         initData()
+    }
+
+    fun setFavorite(favorite: Favorite) {
+        repository.setFavorite(favorite)
     }
 
     fun initData() {
