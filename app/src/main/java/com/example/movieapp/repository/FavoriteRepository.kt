@@ -29,6 +29,8 @@ class FavoriteRepository(application: Application): CoroutineScope{
 
     fun deleteFavorite(title: String) = favoriteDao?.deleteByTitle(title)
 
+    fun deleteAll() = favoriteDao?.deleteAll()
+
     private suspend fun setFavoriteBG(favorite: Favorite){
         withContext(Dispatchers.IO){
             favoriteDao?.setFavorite(favorite)

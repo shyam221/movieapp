@@ -1,6 +1,8 @@
 package com.example.movieapp.adapter
 
 import android.graphics.Color
+import android.opengl.Visibility
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +14,10 @@ import com.example.movieapp.R
 import com.example.movieapp.databinding.MovieItemBinding
 import com.example.movieapp.model.Movie
 import com.example.movieapp.model.ResponseMovie
+import com.example.movieapp.room.Favorite
 
-class MovieAdapter(private val movie: List<Movie>)
+class MovieAdapter(private val movie: List<Movie>,
+                   private val favorites: List<Favorite>)
     : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
     var listener: MovieClickListener? = null
 
@@ -34,6 +38,8 @@ class MovieAdapter(private val movie: List<Movie>)
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         val movies = movie[position]
 
+        Log.d("Size", favorites.size.toString())
+
         when {
             movies.vote_average < 4.0 -> holder.itemMovieBinding.rating.text = "D"
             movies.vote_average <= 5.0 -> holder.itemMovieBinding.rating.text = "C"
@@ -45,6 +51,14 @@ class MovieAdapter(private val movie: List<Movie>)
         holder.itemMovieBinding.title.text = movies.title
         holder.itemMovieBinding.releaseDate.text = movies.release_date
         holder.itemMovieBinding.overview.text = movies.overview
+
+        for (i in favorites.indices) {
+            if (favorites[i].title == movies.title){
+                holder.itemMovieBinding.fav.visibility = View.VISIBLE
+            } else {
+                holder.itemMovieBinding.fav.visibility = View.INVISIBLE
+            }
+        }
 
         when(movies.genre_ids[0]){
             1 ->{
@@ -65,12 +79,18 @@ class MovieAdapter(private val movie: List<Movie>)
             }
         }
         holder.itemMovieBinding.content.setOnClickListener {
-            listener?.onItemClicked(it, movies)
+            if (favorites.isNotEmpty()){
+                for (i in favorites.indices){
+                    listener?.onItemClicked(it, movies, favorites[i])
+                }
+            } else {
+                listener?.onItemClicked(it, movies, null)
+            }
         }
 
     }
 
 }
 interface MovieClickListener {
-    fun onItemClicked(view: View, movie: Movie)
+    fun onItemClicked(view: View, movie: Movie, favorite: Favorite?)
 }

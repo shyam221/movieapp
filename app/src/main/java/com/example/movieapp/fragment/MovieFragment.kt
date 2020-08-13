@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -28,23 +29,15 @@ class MovieFragment : Fragment(), MovieClickListener {
 
     private lateinit var viewModel: MovieViewModel
     private lateinit var binding: FragmentMovieBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_movie, container, false)
         viewModel = ViewModelProviders.of(activity!!).get(MovieViewModel::class.java)
+        viewModel.getFavorite()?.observe(this, Observer<List<Favorite>> { this.renderFavorite(it) })
 
-        viewModel.data.observe({ lifecycle }, {
-            val movieAdapter = MovieAdapter(it.results)
-            movieAdapter.listener = this
-            val recyclerView = binding.listMovie
-
-            recyclerView.apply {
-                this.adapter = movieAdapter
-                this.layoutManager = GridLayoutManager(activity!!, 2)
-            }
-        })
         return binding.root
     }
 
@@ -57,27 +50,48 @@ class MovieFragment : Fragment(), MovieClickListener {
         }
     }
 
-    override fun onItemClicked(view: View, movie: Movie) {
-        val alertDialog: AlertDialog? = activity?.let {
-            val builder = AlertDialog.Builder(it)
-            builder.apply {
-                setPositiveButton("Iya"
-                ) { _, _ ->
+    override fun onItemClicked(view: View, movie: Movie, favorite: Favorite?) {
+        val builder = AlertDialog.Builder(activity!!)
+        builder.setMessage("Apakah Anda ingin memfavorite/unfavorite item ini?")
+        builder.setPositiveButton("Iya") {
+                _,_ -> run {
+            if (favorite != null){
+                if (favorite.title == movie.title) {
+                    viewModel.deleteFavorite(movie.title)
+                } else {
                     viewModel.setFavorite(
-                        Favorite(0, true, movie.poster_path,
+                        Favorite(
+                            0, true, movie.poster_path,
                             movie.title, movie.genre_ids[0], movie.release_date,
-                            movie.vote_average, movie.overview, "Movie"))
+                            movie.vote_average, movie.overview, "Series"
+                        )
+                    )
                 }
-                setNegativeButton("Tidak",
-                    DialogInterface.OnClickListener{ _, _ ->
-
-                    })
+            } else {
+                viewModel.setFavorite(
+                    Favorite(
+                        0, true, movie.poster_path,
+                        movie.title, movie.genre_ids[0], movie.release_date,
+                        movie.vote_average, movie.overview, "Series"
+                    )
+                )
             }
-            builder.setMessage("Apakah Anda ingin memfavorite/unfavorite item ini?")
-            builder.create()
         }
+        }
+        builder.setNegativeButton("Tidak") { _, _ ->  }
+        builder.show()
+    }
 
-        alertDialog!!.show()
+    private fun renderFavorite(favorites: List<Favorite>?) {
+        viewModel.data.observe({ lifecycle }, {
+            val movieAdapter = MovieAdapter(it.results, favorites!!)
+            movieAdapter.listener = this
+            val recyclerView = binding.listMovie
 
+            recyclerView.apply {
+                this.adapter = movieAdapter
+                this.layoutManager = GridLayoutManager(activity!!, 2)
+            }
+        })
     }
 }

@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.movieapp.R
@@ -33,9 +34,57 @@ class SeriesFragment : Fragment(), SeriesClickListener {
     ): View? {
         itemBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_series, container, false)
         seriesViewModel = ViewModelProviders.of(activity!!).get(SeriesViewModel::class.java)
+        seriesViewModel.getFavorite()
+            ?.observe(this, Observer<List<Favorite>> { this.renderFavorite(it) })
 
+        return itemBinding.root
+    }
+
+    override fun onSeriesClick(view: View, series: Series, favorite: Favorite?) {
+        val alertDialog: AlertDialog? = activity?.let {
+            val builder = AlertDialog.Builder(it)
+            builder.apply {
+                setPositiveButton(
+                    "Iya"
+                ) { _, _ ->
+                    if (favorite != null) {
+                        if (favorite.title == series.name) {
+                            seriesViewModel.deleteFavorite(series.name)
+                        } else {
+                            seriesViewModel.setFavorite(
+                                Favorite(
+                                    0, true, series.poster_path,
+                                    series.name, series.genre_ids[0], series.first_air_date,
+                                    series.vote_average, series.overview, "Series"
+                                )
+                            )
+                        }
+                    } else {
+                        seriesViewModel.setFavorite(
+                            Favorite(
+                                0, true, series.poster_path,
+                                series.name, series.genre_ids[0], series.first_air_date,
+                                series.vote_average, series.overview, "Series"
+                            )
+                        )
+                    }
+                }
+                setNegativeButton(
+                    "Tidak"
+                ) { _, _ ->
+
+                }
+            }
+            builder.setMessage("Apakah Anda ingin memfavorite/unfavorite item ini?")
+            builder.create()
+        }
+
+        alertDialog!!.show()
+    }
+
+    fun renderFavorite(favorite: List<Favorite>?) {
         seriesViewModel.data.observe({ lifecycle }, {
-            val seriesAdapter = SeriesAdapter(it.results)
+            val seriesAdapter = SeriesAdapter(it.results, favorite!!)
             seriesAdapter.listener = this
             val recyclerView = itemBinding.listSeries
 
@@ -44,31 +93,5 @@ class SeriesFragment : Fragment(), SeriesClickListener {
                 this.layoutManager = GridLayoutManager(activity!!, 2)
             }
         })
-
-        return itemBinding.root
-    }
-
-    override fun onSeriesClick(view: View, series: Series) {
-        val alertDialog: AlertDialog? = activity?.let {
-            val builder = AlertDialog.Builder(it)
-            builder.apply {
-                setPositiveButton("Iya"
-                ) { _, _ ->
-                    seriesViewModel.setFavorite(
-                        Favorite(0, true, series.poster_path,
-                            series.name, series.genre_ids[0], series.first_air_date,
-                            series.vote_average, series.overview, "Series")
-                    )
-                }
-                setNegativeButton("Tidak",
-                    DialogInterface.OnClickListener{ _, _ ->
-
-                    })
-            }
-            builder.setMessage("Apakah Anda ingin memfavorite/unfavorite item ini?")
-            builder.create()
-        }
-
-        alertDialog!!.show()
     }
 }
