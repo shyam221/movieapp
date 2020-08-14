@@ -45,14 +45,11 @@ class SeriesAdapter (private val series: List<Series>, private val favorites: Li
         holder.itemBinding.releaseDate.text = serie.first_air_date
         holder.itemBinding.overview.text = serie.overview
 
-        for (i in favorites.indices){
-            if (favorites[i].title == serie.name){
-                holder.itemBinding.fav.visibility = View.VISIBLE
-            } else {
-                holder.itemBinding.fav.visibility = View.INVISIBLE
-            }
+        if (favorites.any { it.title == serie.name }){
+            holder.itemBinding.fav.visibility = View.VISIBLE
+        } else {
+            holder.itemBinding.fav.visibility = View.INVISIBLE
         }
-
         when(serie.genre_ids[0]){
             1 ->{
                 if (serie.name.equals("the simpsons",true)){
@@ -89,18 +86,13 @@ class SeriesAdapter (private val series: List<Series>, private val favorites: Li
             }
         }
         holder.itemBinding.content.setOnClickListener {
-           if (favorites.isNotEmpty()){
-               for (i in favorites.indices){
-                   listener?.onSeriesClick(it, serie, favorites[i])
-               }
-           } else {
-               listener?.onSeriesClick(it, serie, null)
-           }
+               listener?.onSeriesClick(it, serie, favorites)
+
         }
     }
 
 }
 
 interface SeriesClickListener{
-    fun onSeriesClick(view: View, series: Series, favorite: Favorite?)
+    fun onSeriesClick(view: View, series: Series, favorite: List<Favorite>)
 }

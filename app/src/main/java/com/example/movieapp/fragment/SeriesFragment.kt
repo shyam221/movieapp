@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -37,19 +38,25 @@ class SeriesFragment : Fragment(), SeriesClickListener {
         seriesViewModel.getFavorite()
             ?.observe(this, Observer<List<Favorite>> { this.renderFavorite(it) })
 
+        itemBinding.refresh.setOnRefreshListener {
+            seriesViewModel.getFavorite()
+                ?.observe(this, Observer<List<Favorite>> { this.refreshLayout(it) })
+        }
+
         return itemBinding.root
     }
 
-    override fun onSeriesClick(view: View, series: Series, favorite: Favorite?) {
+    override fun onSeriesClick(view: View, series: Series, favorite: List<Favorite>) {
         val alertDialog: AlertDialog? = activity?.let {
             val builder = AlertDialog.Builder(it)
             builder.apply {
                 setPositiveButton(
                     "Iya"
                 ) { _, _ ->
-                    if (favorite != null) {
-                        if (favorite.title == series.name) {
+                    if (favorite.isNotEmpty()) {
+                        if (favorite.any { it -> it.title == series.name }) {
                             seriesViewModel.deleteFavorite(series.name)
+                            Toast.makeText(activity!!, "Telah di unfavorite", Toast.LENGTH_SHORT).show()
                         } else {
                             seriesViewModel.setFavorite(
                                 Favorite(
@@ -58,6 +65,7 @@ class SeriesFragment : Fragment(), SeriesClickListener {
                                     series.vote_average, series.overview, "Series"
                                 )
                             )
+                            Toast.makeText(activity!!, "Telah di favorite", Toast.LENGTH_SHORT).show()
                         }
                     } else {
                         seriesViewModel.setFavorite(
@@ -67,6 +75,7 @@ class SeriesFragment : Fragment(), SeriesClickListener {
                                 series.vote_average, series.overview, "Series"
                             )
                         )
+                        Toast.makeText(activity!!, "Telah di favorite", Toast.LENGTH_SHORT).show()
                     }
                 }
                 setNegativeButton(
@@ -93,5 +102,20 @@ class SeriesFragment : Fragment(), SeriesClickListener {
                 this.layoutManager = GridLayoutManager(activity!!, 2)
             }
         })
+    }
+
+    fun refreshLayout(favorite: List<Favorite>?) {
+        seriesViewModel.data.observe({ lifecycle }, {
+            val seriesAdapter = SeriesAdapter(it.results, favorite!!)
+            seriesAdapter.listener = this
+            val recyclerView = itemBinding.listSeries
+
+            recyclerView.apply {
+                this.adapter = seriesAdapter
+                this.layoutManager = GridLayoutManager(activity!!, 2)
+            }
+        })
+        Toast.makeText(activity!!, "Data telah dimuat ulang", Toast.LENGTH_SHORT).show()
+        itemBinding.refresh.isRefreshing = false
     }
 }

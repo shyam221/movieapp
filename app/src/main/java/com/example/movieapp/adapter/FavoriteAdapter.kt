@@ -2,6 +2,7 @@ package com.example.movieapp.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -39,25 +40,62 @@ class FavoriteAdapter (private val favorites: List<Favorite>) :
         holder.itemBinding.title.text = favorite.title
         holder.itemBinding.releaseDate.text = favorite.releaseDate
         holder.itemBinding.overview.text = favorite.overview
+        holder.itemBinding.fav.visibility = View.VISIBLE
 
-//        when(favorite.genres[0]) {
-//            1 ->{
-//                holder.itemBinding.genre.text = "Drama"
-//                holder.itemBinding.border.setBackgroundColor(Color.parseColor("#0000FF"))
-//            }
-//            2 -> {
-//                holder.itemBinding.genre.text = "Lainnya"
-//                holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FF00FF"))
-//            }
-//            3 -> {
-//                holder.itemBinding.genre.text = "Comedy"
-//                holder.itemBinding.border.setBackgroundColor(Color.parseColor("#00FF00"))
-//            }
-//            4 -> {
-//                holder.itemBinding.genre.text = "Action"
-//                holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FF0000"))
-//            }
-//        }
+        if(favorite.type.equals("movie", true)){
+            when(favorite.genres) {
+                1 ->{
+                    holder.itemBinding.genre.text = "Drama"
+                    holder.itemBinding.border.setBackgroundColor(Color.parseColor("#0000FF"))
+                }
+                2 -> {
+                    holder.itemBinding.genre.text = "Lainnya"
+                    holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FF00FF"))
+                }
+                3 -> {
+                    holder.itemBinding.genre.text = "Comedy"
+                    holder.itemBinding.border.setBackgroundColor(Color.parseColor("#00FF00"))
+                }
+                4 -> {
+                    holder.itemBinding.genre.text = "Action"
+                    holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FF0000"))
+                }
+            }
+        } else {
+            when(favorite.genres){
+                1 ->{
+                    if (favorite.title.equals("the simpsons",true)){
+                        holder.itemBinding.genre.text = "Animation"
+                        holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FFFF00"))
+                    } else {
+                        holder.itemBinding.genre.text = "Drama"
+                        holder.itemBinding.border.setBackgroundColor(Color.parseColor("#0000FF"))
+                    }
+                }
+                2 -> {
+                    if (favorite.title.equals("family guy",true)){
+                        holder.itemBinding.genre.text = "Animation"
+                        holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FFFF00"))
+                    } else {
+                        holder.itemBinding.genre.text = "Action"
+                        holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FF0000"))
+                    }
+                }
+                3 -> {
+                    if (favorite.title.equals("the simpsons",true)){
+                        holder.itemBinding.genre.text = "Animation"
+                        holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FFFF00"))
+                    } else {
+                        holder.itemBinding.genre.text = "Drama"
+                        holder.itemBinding.border.setBackgroundColor(Color.parseColor("#0000FF"))
+                    }
+                }
+                4 -> {
+                    holder.itemBinding.genre.text = "Action"
+                    holder.itemBinding.border.setBackgroundColor(Color.parseColor("#FF0000"))
+                }
+            }
+        }
     }
 
 }

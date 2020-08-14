@@ -22,6 +22,10 @@ class FavoriteRepository(application: Application): CoroutineScope{
     }
 
     fun getFavorite() = favoriteDao?.getFavorite()
+    fun sortByGenre() = favoriteDao?.sortByGenre()
+    fun sortByRelease() = favoriteDao?.sortByRelease()
+    fun sortByRating() = favoriteDao?.sortByRating()
+    fun isFavorite(title: String) = favoriteDao?.isFavorit(title)
 
     fun setFavorite(favorite: Favorite) {
         launch { setFavoriteBG(favorite) }

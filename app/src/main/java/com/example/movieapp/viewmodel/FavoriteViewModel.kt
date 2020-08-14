@@ -9,6 +9,9 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
     private var repository: FavoriteRepository = FavoriteRepository(application)
 
     fun getFavorite() = repository.getFavorite()
+    fun sortByGenre() = repository.sortByGenre()
+    fun sortByRelease() = repository.sortByRelease()
+    fun sortByRating() = repository.sortByRating()
 
     fun setFavorite(favorite: Favorite) {
         repository.setFavorite(favorite)

@@ -52,13 +52,15 @@ class MovieAdapter(private val movie: List<Movie>,
         holder.itemMovieBinding.releaseDate.text = movies.release_date
         holder.itemMovieBinding.overview.text = movies.overview
 
-        for (i in favorites.indices) {
-            if (favorites[i].title == movies.title){
+//        favorites.forEach {
+//            Log.d("TITLE", it.title)
+            if (favorites.any { it.title == movies.title } ){
                 holder.itemMovieBinding.fav.visibility = View.VISIBLE
             } else {
                 holder.itemMovieBinding.fav.visibility = View.INVISIBLE
             }
-        }
+//        }
+
 
         when(movies.genre_ids[0]){
             1 ->{
@@ -80,11 +82,9 @@ class MovieAdapter(private val movie: List<Movie>,
         }
         holder.itemMovieBinding.content.setOnClickListener {
             if (favorites.isNotEmpty()){
-                for (i in favorites.indices){
-                    listener?.onItemClicked(it, movies, favorites[i])
-                }
+                    listener?.onItemClicked(it, movies, favorites)
             } else {
-                listener?.onItemClicked(it, movies, null)
+                listener?.onItemClicked(it, movies, favorites)
             }
         }
 
@@ -92,5 +92,5 @@ class MovieAdapter(private val movie: List<Movie>,
 
 }
 interface MovieClickListener {
-    fun onItemClicked(view: View, movie: Movie, favorite: Favorite?)
+    fun onItemClicked(view: View, movie: Movie, favorite: List<Favorite>)
 }
